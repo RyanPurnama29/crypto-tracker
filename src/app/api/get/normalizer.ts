@@ -1,3 +1,5 @@
+import { type DataType } from "./types";
+
 interface DataItem {
   companyName: string;
   etfName: string;
@@ -5,7 +7,7 @@ interface DataItem {
   value: string;
 }
 
-export function normalizer(data: any): DataItem[] {
+export function normalizer(data: DataType): DataItem[] {
   const result: DataItem[] = [];
   const [companyNames, etfNames] = data.header;
 

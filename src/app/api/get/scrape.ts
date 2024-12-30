@@ -23,11 +23,11 @@ export async function scrapeETFData() {
     });
 
     const etfData = await page.evaluate(() => {
-      const header: String[][] = [];
+      const header: string[][] = [];
       Array.from(document.querySelectorAll("table thead tr")).map(
         (row, rowIndex) => {
           if (rowIndex === 0 || rowIndex === 1) {
-            const thArray: String[] = [];
+            const thArray: string[] = [];
             Array.from(row.querySelectorAll("th")).map((th) => {
               thArray.push(`${th.innerText.trim()}`);
             });
@@ -36,10 +36,10 @@ export async function scrapeETFData() {
         }
       );
 
-      const body: String[][] = [];
+      const body: string[][] = [];
       Array.from(document.querySelectorAll("table tbody tr")).map((row) => {
-        const tdArray: String[] = [];
-        const dataRow = Array.from(row.querySelectorAll("td")).map((td) => {
+        const tdArray: string[] = [];
+        Array.from(row.querySelectorAll("td")).map((td) => {
           const tdText = td.innerText.trim();
           tdArray.push(`${tdText}`);
         });
@@ -57,7 +57,6 @@ export async function scrapeETFData() {
     console.error("Error scraping data:", error);
     throw error;
   } finally {
-    // console.log('#etfData', etfData);
     await browser.close();
   }
 }
