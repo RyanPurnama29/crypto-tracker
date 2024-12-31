@@ -1,10 +1,20 @@
-import { type DataType } from "./types";
+import { type DataType } from './types';
 
 interface DataItem {
   companyName: string;
   etfName: string;
-  date: string;
-  value: string;
+  date: string
+  formatedDate: Date;
+  amount: number;
+}
+
+function convertStringToNumber(input: string): number {
+  if (input.startsWith("(") && input.endsWith(")")) {
+    const numberString = input.slice(1, -1);
+    return -parseFloat(numberString);
+  }
+  if (input === "0.0") return 0;
+  return parseFloat(input);
 }
 
 export function normalizer(data: DataType): DataItem[] {
@@ -18,7 +28,8 @@ export function normalizer(data: DataType): DataItem[] {
         companyName: companyNames[index],
         etfName: etfNames[index],
         date,
-        value: `${value}`,
+        formatedDate: new Date(date), //UTC format
+        amount: convertStringToNumber(`${value}`),
       });
     });
   });
