@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prisma:generate": "npx prisma generate",
     "prisma:migrate:dev": "npx prisma migrate dev",
     "prisma:migrate:deploy": "npx prisma migrate deploy",
+    "prisma:generate": "npx prisma generate",
     "prisma:seed": "prisma db seed"
   },
   "prisma": {

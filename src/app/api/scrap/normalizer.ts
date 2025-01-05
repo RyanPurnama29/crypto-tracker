@@ -1,24 +1,16 @@
-import { type DataType } from './types';
-
-interface DataItem {
-  companyName: string;
-  etfName: string;
-  date: string
-  formatedDate: Date;
-  amount: number;
-}
+import { type DataType, type Transaction } from './types';
 
 function convertStringToNumber(input: string): number {
   if (input.startsWith("(") && input.endsWith(")")) {
     const numberString = input.slice(1, -1);
     return -parseFloat(numberString);
   }
-  if (input === "0.0") return 0;
+  if (input === "0.0" || input === "-") return 0;
   return parseFloat(input);
 }
 
-export function normalizer(data: DataType): DataItem[] {
-  const result: DataItem[] = [];
+export function normalizer(data: DataType): Transaction[] {
+  const result: Transaction[] = [];
   const [companyNames, etfNames] = data.header;
 
   data.body.forEach((bodyRow: string[]) => {
@@ -26,7 +18,7 @@ export function normalizer(data: DataType): DataItem[] {
     values.forEach((value, index) => {
       result.push({
         companyName: companyNames[index],
-        etfName: etfNames[index],
+        etfSymbol: etfNames[index],
         date,
         formatedDate: new Date(date), //UTC format
         amount: convertStringToNumber(`${value}`),

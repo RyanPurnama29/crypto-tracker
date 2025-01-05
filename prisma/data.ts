@@ -1,4 +1,4 @@
-export const etfData = [
+export const ETF_DATA = [
   {
     etf_symbol: "IBIT",
     etf_name: "iShares Bitcoin Trust",
@@ -60,7 +60,7 @@ export const etfData = [
     etf_name: "WisdomTree Bitcoin Fund",
     crypto_name: "Bitcoin",
     crypto_symbol: "BTC",
-    company_name: "WisdomTree",
+    company_name: "WTree",
   },
   {
     etf_symbol: "GBTC",

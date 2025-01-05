@@ -29,4 +29,5 @@ model Transaction {
   amount Float
   date DateTime
   etf Etf @relation(fields: [etf_id], references: [id])
+  @@unique([etf_id, date])
 }

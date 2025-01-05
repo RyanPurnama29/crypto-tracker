@@ -1,11 +1,13 @@
 import { PrismaClient } from '@prisma/client';
-import { etfData } from './mock-data';
+import { ETF_DATA } from './data';
 
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.transaction.deleteMany();
+  await prisma.etf.deleteMany();
   await prisma.etf.createMany({
-    data: etfData,
+    data: ETF_DATA,
   });
 }
 
@@ -15,5 +17,6 @@ main()
     process.exit(1);
   })
   .finally(async () => {
+    console.log('Seed data success');
     await prisma.$disconnect();
   });
