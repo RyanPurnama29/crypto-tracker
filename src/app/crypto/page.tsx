@@ -1,6 +1,5 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import normalizer from './normalizer';
-import type { ETFTable } from './types';
 
 async function getEtf() {
   const res = await fetch(`http://localhost:3000/api/get/etf`);
