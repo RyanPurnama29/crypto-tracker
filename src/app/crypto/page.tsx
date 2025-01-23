@@ -11,7 +11,7 @@ async function getTransaction() {
   return res.json();
 }
 
-const Crypto: React.FC = async () => {
+const Crypto = async () => {
   const etfData = getEtf();
   const transactionData = getTransaction();
   const [etf, transaction] = await Promise.all([etfData, transactionData]);
