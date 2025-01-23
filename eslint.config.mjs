@@ -27,8 +27,13 @@ const eslintConfig = [
       'no-unsafe-optional-chaining': 'off',
       'no-unsafe-return': 'off',
       'no-unreachable-loop:': 'off',
-    },
+    }
   },
+  {
+    ignores: [
+      'src/generated',
+    ]
+  }
 ];
 
 export default eslintConfig;

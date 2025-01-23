@@ -2,14 +2,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import normalizer from './normalizer';
 
 async function getEtf() {
-  const res = await fetch(`http://localhost:3000/api/get/etf`);
+  const res = await fetch(`/api/get/etf`);
   return res.json();
 }
 
 async function getTransaction() {
-  const res = await fetch(`http://localhost:3000/api/get/transaction`);
+  const res = await fetch(`/api/get/transaction`);
   return res.json();
 }
+
+export const dynamic = 'force-dynamic'; //disable static generation (pre-rendering)
 
 const Crypto = async () => {
   const etfData = getEtf();

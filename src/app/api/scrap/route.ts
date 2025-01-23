@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import prisma from '@/lib/prisma';
+import prisma from '@/lib/prisma/prisma';
 import { scrapeETFData } from "./scrape";
 import { normalizer } from "./normalizer";
 import { type Transaction } from "./types";
