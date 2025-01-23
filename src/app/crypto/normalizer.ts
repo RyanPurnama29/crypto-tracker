@@ -34,9 +34,11 @@ const normalizer = (etfData: ETF[], transactionData: Transaction[]): TableRow[] 
   // Format data untuk tabel
   for (const date in groupedByDate) {
     const row: TableRow = { date };
+    // console.log(date);
     for (const etfSymbol in groupedByDate[date]) {
       row[etfSymbol] = groupedByDate[date][etfSymbol];
     }
+    // console.log(row);
     result.push(row);
   }
 

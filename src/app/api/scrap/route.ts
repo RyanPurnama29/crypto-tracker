@@ -62,7 +62,6 @@ export async function GET() {
   const etfData = await scrapeETFData();
   const normalizeData = normalizer(etfData);
 
-  // await deleteAllTransactions();
   await insertTransactions(normalizeData);
 
   const allTransactions = await getAllTransactions();
