@@ -10,8 +10,8 @@ import { type Transaction } from "./types";
 // }
 
 async function insertTransactions(normalizeData: Transaction[]) {
-  for (const transaction of normalizeData) {
-    try {
+  try {
+    const upsertPromises = normalizeData.map(async (transaction) => {
       // Cari ETF berdasarkan etf_name dan company_name
       const etf = await prisma.etf.findFirst({
         where: {
@@ -22,7 +22,7 @@ async function insertTransactions(normalizeData: Transaction[]) {
 
       if (!etf) {
         console.error(`ETF not found for ${transaction.etfSymbol} (${transaction.companyName})`);
-        continue;
+        return;
       }
 
       // Gunakan upsert untuk membuat atau memperbarui transaksi
@@ -43,10 +43,13 @@ async function insertTransactions(normalizeData: Transaction[]) {
         },
       });
 
-      console.log(`Upserted transaction for ETF: ${transaction.etfSymbol} on ${transaction.formatedDate.toLocaleString('id-ID')}`);
-    } catch (error) {
-      console.error(`Error inserting transaction for ${transaction.etfSymbol}:`, error);
-    }
+      // console.log(`Upserted transaction for ETF: ${transaction.etfSymbol} on ${transaction.formatedDate.toLocaleString('id-ID')}`);
+    });
+
+    // Jalankan semua upsert secara paralel
+    await Promise.all(upsertPromises);
+  } catch (error) {
+    console.error('Error inserting transactions:', error);
   }
 }
 
