@@ -11,7 +11,7 @@ async function getTransaction() {
   return res.json();
 }
 
-// export const dynamic = 'force-dynamic'; // disable static rendering (pre-rendering)
+export const dynamic = 'force-dynamic'; // disable pre-rendering
 
 const Crypto = async () => {
   const etfData = getEtf();
