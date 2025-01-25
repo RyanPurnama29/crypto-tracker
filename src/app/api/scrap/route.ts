@@ -62,11 +62,19 @@ async function getAllTransactions() {
 }
 
 export async function GET() {
-  const etfData = await scrapeETFData();
-  const normalizeData = normalizer(etfData);
+  const scrappedData = await scrapeETFData();
+  /**
+   * @note: this is used to reduce the database insertion time consumption
+   */
+  const get3LastData = {
+    header: scrappedData.header,
+    body: scrappedData.body.slice(-3), // Ambil 3 data terakhir
+  };
+  
+  const normalizeData = normalizer(get3LastData);
 
   await insertTransactions(normalizeData);
 
-  const allTransactions = await getAllTransactions();
-  return NextResponse.json({ data: allTransactions }, { status: 200 });
+  // const allTransactions = await getAllTransactions();
+  return NextResponse.json({ data: get3LastData }, { status: 200 });
 }
