@@ -19,8 +19,7 @@
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,css,scss,json,md}": [
       "prettier --write",
-      "eslint --fix",
-      "git add"
+      "eslint --fix"
     ]
   },
   "type": "module",
