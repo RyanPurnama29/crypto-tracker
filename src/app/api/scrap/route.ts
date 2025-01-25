@@ -53,14 +53,6 @@ async function insertTransactions(normalizeData: Transaction[]) {
   }
 }
 
-async function getAllTransactions() {
-  return prisma.transaction.findMany({
-    include: {
-      etf: true,
-    },
-  });
-}
-
 export async function GET() {
   const scrappedData = await scrapeETFData();
   /**
