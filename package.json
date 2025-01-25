@@ -25,6 +25,7 @@
   "type": "module",
   "dependencies": {
     "@prisma/client": "^6.1.0",
+    "@vercel/speed-insights": "^1.1.0",
     "axios": "^1.7.9",
     "cheerio": "^1.0.0",
     "class-variance-authority": "^0.7.1",
