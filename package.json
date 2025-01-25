@@ -17,8 +17,10 @@
     "seed": "tsx prisma/seed.ts"
   },
   "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx}": [
-      "eslint --fix"
+    "src/**/*.{js,jsx,ts,tsx,css,scss,json,md}": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
     ]
   },
   "type": "module",
