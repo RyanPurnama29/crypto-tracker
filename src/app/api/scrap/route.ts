@@ -39,9 +39,7 @@ async function insertTransactions(normalizeData: Transaction[]) {
         },
       });
 
-      console.log(
-        `Upserted transaction for ETF: ${transaction.etfSymbol} on ${transaction.formatedDate.toLocaleString('id-ID')}`,
-      );
+      console.log(`Upserted transaction for ETF: ${transaction.etfSymbol} on ${transaction.formatedDate}`);
     });
 
     // Jalankan semua upsert secara paralel
@@ -52,8 +50,6 @@ async function insertTransactions(normalizeData: Transaction[]) {
 }
 
 export async function GET() {
-  console.time('Total Execution Time');
-
   try {
     // Step 1: Scrape ETF Data
     console.time('Scrape ETF Data');
@@ -74,6 +70,7 @@ export async function GET() {
     console.timeEnd('Normalize Data');
 
     // Step 4: Insert Data into Database
+    console.log('Data Inserted Started');
     console.time('Insert Data into Database');
     await insertTransactions(normalizeData);
     console.timeEnd('Insert Data into Database');
