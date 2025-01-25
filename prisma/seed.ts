@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 import { ETF_DATA } from './data';
 
 const prisma = new PrismaClient();
