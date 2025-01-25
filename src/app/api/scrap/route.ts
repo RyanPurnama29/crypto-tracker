@@ -8,7 +8,6 @@ import { type Transaction } from './types';
 async function insertTransactions(normalizeData: Transaction[]) {
   try {
     const upsertPromises = normalizeData.map(async transaction => {
-      // Cari ETF berdasarkan etf_name dan company_name
       const etf = await prisma.etf.findFirst({
         where: {
           etf_symbol: transaction.etfSymbol,
@@ -40,7 +39,9 @@ async function insertTransactions(normalizeData: Transaction[]) {
         },
       });
 
-      // console.log(`Upserted transaction for ETF: ${transaction.etfSymbol} on ${transaction.formatedDate.toLocaleString('id-ID')}`);
+      console.log(
+        `Upserted transaction for ETF: ${transaction.etfSymbol} on ${transaction.formatedDate.toLocaleString('id-ID')}`,
+      );
     });
 
     // Jalankan semua upsert secara paralel
