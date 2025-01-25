@@ -51,19 +51,39 @@ async function insertTransactions(normalizeData: Transaction[]) {
 }
 
 export async function GET() {
-  const scrappedData = await scrapeETFData();
-  /**
-   * @note: this is used to reduce the database insertion time consumption
-   */
-  const get2LastData = {
-    header: scrappedData.header,
-    body: scrappedData.body.slice(-2), // Ambil 2 data terakhir
-  };
+  console.time('Total Execution Time');
 
-  const normalizeData = normalizer(get2LastData);
+  try {
+    // Step 1: Scrape ETF Data
+    console.time('Scrape ETF Data');
+    const scrappedData = await scrapeETFData();
+    console.timeEnd('Scrape ETF Data');
 
-  await insertTransactions(normalizeData);
+    // Step 2: Extract Last 2 Rows
+    console.time('Extract Last 2 Rows');
+    const get2LastData = {
+      header: scrappedData.header,
+      body: scrappedData.body.slice(-2), // Take the last 2 rows
+    };
+    console.timeEnd('Extract Last 2 Rows');
 
-  // const allTransactions = await getAllTransactions();
-  return NextResponse.json({ data: get2LastData }, { status: 200 });
+    // Step 3: Normalize Data
+    console.time('Normalize Data');
+    const normalizeData = normalizer(get2LastData);
+    console.timeEnd('Normalize Data');
+
+    // Step 4: Insert Data into Database
+    console.time('Insert Data into Database');
+    await insertTransactions(normalizeData);
+    console.timeEnd('Insert Data into Database');
+    console.log('Data Inserted Successfully');
+
+    // Step 5: Return Response
+    console.timeEnd('Total Execution Time');
+    return NextResponse.json({ data: get2LastData }, { status: 200 });
+  } catch (error) {
+    console.error('Error in GET function:', error);
+    console.timeEnd('Total Execution Time');
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
 }
