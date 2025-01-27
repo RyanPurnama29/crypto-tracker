@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -23,6 +17,8 @@ model Etf {
   crypto_symbol String
   company_name  String
   transactions  Transaction[]
+
+  @@index([etf_symbol, company_name], map: "idx_etf_symbol_company")
 }
 
 model Transaction {
@@ -33,4 +29,5 @@ model Transaction {
   etf    Etf      @relation(fields: [etf_id], references: [id])
 
   @@unique([etf_id, date])
+  @@unique([etf_id, date], map: "unique_etf_date")
 }

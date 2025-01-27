@@ -3374,7 +3374,7 @@ export namespace Prisma {
     amount?: FloatFilter<"Transaction"> | number
     date?: DateTimeFilter<"Transaction"> | Date | string
     etf?: XOR<EtfScalarRelationFilter, EtfWhereInput>
-  }, "id" | "etf_id_date">
+  }, "id" | "etf_id_date" | "etf_id_date">
 
   export type TransactionOrderByWithAggregationInput = {
     id?: SortOrder
