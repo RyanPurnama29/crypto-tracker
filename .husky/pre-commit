@@ -1,2 +1,5 @@
 export PATH=$PATH:/Users/ryan/.nvm/versions/node/v21.6.2/bin
+
+echo $SHELL
+
 /Users/ryan/.nvm/versions/node/v21.6.2/bin/npx lint-staged
