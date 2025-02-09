@@ -1,0 +1,40 @@
+name: Deploy Next.js to AWS EC2
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run build
+
+    - name: Deploy to EC2
+      env:
+        EC2_HOST: "ec2-13-229-103-70.ap-southeast-1.compute.amazonaws.com"
+        EC2_USER: "ec2-user"
+      run: |
+        echo "$AWS_EC2_SSH_KEY" > private_key.pem
+        chmod 600 private_key.pem
+        ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USER@$EC2_HOST << 'EOF'
+          cd ~/crypto-tracker
+          git pull origin master
+          npm install
+          npm run build
+          pm2 restart crypto-tracker
+        EOF
