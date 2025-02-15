@@ -13,28 +13,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
+    - name: Deploy to EC2 via SSH
+      uses: appleboy/ssh-action@master
       with:
-        node-version: 18
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Build project
-      run: npm run build
-
-    - name: Deploy to EC2
-      env:
-        EC2_HOST: "ec2-13-229-103-70.ap-southeast-1.compute.amazonaws.com"
-        EC2_USER: "ec2-user"
-      run: |
-        echo "$AWS_EC2_SSH_KEY" > private_key.pem
-        chmod 600 private_key.pem
-        ssh -o StrictHostKeyChecking=no -i private_key.pem $EC2_USER@$EC2_HOST << 'EOF'
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
           cd ~/crypto-tracker
           git pull origin master
           npm install
           npm run build
+          pm2 describe crypto-tracker > /dev/null || pm2 start npm --name "crypto-tracker" -- run start
           pm2 restart crypto-tracker
-        EOF
+    
