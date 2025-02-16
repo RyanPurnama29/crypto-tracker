@@ -14,11 +14,8 @@ export interface Transaction {
   date: string;
 }
 
-export interface TableRow {
-  date: string;
-  [key: string]: number | string; // Dynamic keys for ETF symbols
-}
-
-export interface ETFTable {
-  data: TableRow[];
+export interface TableColumns {
+  title: string;
+  dataIndex: string;
+  key: string;
 }

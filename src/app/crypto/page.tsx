@@ -1,5 +1,5 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import normalizer from './normalizer';
+import { Table } from 'antd';
+import { generateColumns, generateDataSource } from './normalize-table';
 
 async function getEtf() {
   const res = await fetch(`https://crypto-tracker-iota-nine.vercel.app/api/get/etf`);
@@ -17,31 +17,13 @@ const Crypto = async () => {
   const etfData = getEtf();
   const transactionData = getTransaction();
   const [etf, transaction] = await Promise.all([etfData, transactionData]);
-  const etfTable = normalizer(etf, transaction);
-  const columns = ['date', ...new Set(etfTable.flatMap(row => Object.keys(row)).filter(key => key !== 'date'))];
+  const columns = generateColumns(etf);
+  const dataSource = generateDataSource(columns, transaction);
 
   return (
-    <div className="container mx-auto">
-      <h1 className="text-3xl font-bold my-8">Bitcoin ETF</h1>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {columns.map(column => (
-              <TableHead key={column}>{column.toUpperCase()}</TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {etfTable.map((row, index) => (
-            <TableRow key={index}>
-              {columns.map(column => {
-                const value = row[column] || '-';
-                return <TableCell key={column}>{value}</TableCell>;
-              })}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+    <div className="p-6">
+      <h1>Bitcoin ETF</h1>
+      <Table columns={columns} dataSource={dataSource} pagination={false} scroll={{ x: 'max-content' }} />
     </div>
   );
 };

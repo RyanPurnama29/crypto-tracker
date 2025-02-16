@@ -1,0 +1,16 @@
+export const columns = [
+  { title: 'Date', dataIndex: 'date', key: 'date' },
+  { title: 'Date', dataIndex: 'date', key: 'date' },
+  { title: 'IBIT', dataIndex: 'ibit', key: 'ibit' },
+  { title: 'FBTC', dataIndex: 'fbtc', key: 'fbtc' },
+  { title: 'BITB', dataIndex: 'bitb', key: 'bitb' },
+  { title: 'ARKB', dataIndex: 'arkb', key: 'arkb' },
+  { title: 'BTCO', dataIndex: 'btco', key: 'btco' },
+  { title: 'EZBC', dataIndex: 'ezbc', key: 'ezbc' },
+  { title: 'BRRR', dataIndex: 'brrr', key: 'brrr' },
+  { title: 'HODL', dataIndex: 'hodl', key: 'hodl' },
+  { title: 'BTCW', dataIndex: 'btcw', key: 'btcw' },
+  { title: 'GBTC', dataIndex: 'gbtc', key: 'gbtc' },
+  { title: 'BTC', dataIndex: 'btc', key: 'btc' },
+  { title: 'Total', dataIndex: 'total', key: 'total' },
+];

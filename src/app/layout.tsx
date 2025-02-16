@@ -1,6 +1,8 @@
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { AntdRegistry } from '@ant-design/nextjs-registry';
+import { ConfigProvider, theme } from 'antd';
 import './globals.css';
 
 const geistSans = Geist({
@@ -25,10 +27,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg:white dark:bg-slate-900 text-black dark:text-white`}
-      >
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <AntdRegistry>
+          <ConfigProvider
+            theme={{
+              algorithm: theme.darkAlgorithm,
+            }}
+          >
+            {children}
+          </ConfigProvider>
+        </AntdRegistry>
         <SpeedInsights />
       </body>
     </html>
