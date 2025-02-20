@@ -13,6 +13,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Setup SSH for GitHub
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_GITHUB_PRIVATE_KEY }}" > ~/.ssh/id_rsa_github
+        chmod 600 ~/.ssh/id_rsa_github
+        eval $(ssh-agent -s)
+        ssh-add ~/.ssh/id_rsa_github
+        ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+
     - name: Deploy to EC2 via SSH
       uses: appleboy/ssh-action@master
       with:
@@ -20,10 +31,10 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
+          export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_github"
           cd ~/crypto-tracker
           git pull origin master
           npm install
           npm run build
           pm2 describe crypto-tracker > /dev/null || pm2 start npm --name "crypto-tracker" -- run start
           pm2 restart crypto-tracker
-    
