@@ -13,6 +13,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    # Setup SSH untuk akses GitHub di GitHub Actions runner
     - name: Setup SSH for GitHub
       run: |
         mkdir -p ~/.ssh
@@ -24,6 +25,13 @@ jobs:
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git config --global user.name "github-actions[bot]"
 
+    # Debugging untuk memastikan SSH key tersedia di GitHub Actions runner
+    - name: Debug SSH Key in GitHub Actions
+      run: |
+        ls -lah ~/.ssh
+        cat ~/.ssh/id_rsa_github
+
+    # SSH ke EC2 dan jalankan deploy script
     - name: Deploy to EC2 via SSH
       uses: appleboy/ssh-action@master
       with:
@@ -31,7 +39,20 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
+          # Setup SSH di dalam EC2
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_GITHUB_PRIVATE_KEY }}" > ~/.ssh/id_rsa_github
+          chmod 600 ~/.ssh/id_rsa_github
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+
+          # Debugging untuk memastikan SSH key tersedia di EC2
+          ls -lah ~/.ssh
+          cat ~/.ssh/id_rsa_github
+
+          # Gunakan SSH key yang benar saat `git pull`
           export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_github"
+
+          # Deploy aplikasi
           cd ~/crypto-tracker
           git pull origin master
           npm install
