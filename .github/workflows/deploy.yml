@@ -16,7 +16,7 @@ jobs:
     - name: Setup SSH for GitHub
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_GITHUB_PRIVATE_KEY }}" > ~/.ssh/id_rsa_github
+        echo "${{ secrets.SSH_GITHUB_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa_github
         chmod 600 ~/.ssh/id_rsa_github
         eval $(ssh-agent -s)
         ssh-add ~/.ssh/id_rsa_github
