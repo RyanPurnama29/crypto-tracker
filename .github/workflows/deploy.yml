@@ -9,53 +9,64 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    # ambil code dari repo
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # Setup SSH untuk akses GitHub di GitHub Actions runner
-    - name: Setup SSH for GitHub
+    # setup node di GH Action runner
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '21'
+
+    # install dep di GH Action runner
+    - name: Install dependencies & Build
+      run: |
+        npm install
+        npm run build
+
+    # Setup SSH Key di GH action agar bisa menggunakan rsync
+    - name: Setup SSH Key
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_GITHUB_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa_github
-        chmod 600 ~/.ssh/id_rsa_github
-        eval $(ssh-agent -s)
-        ssh-add ~/.ssh/id_rsa_github
-        ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "github-actions[bot]"
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-    # Debugging untuk memastikan SSH key tersedia di GitHub Actions runner
-    - name: Debug SSH Key in GitHub Actions
-      run: |
-        ls -lah ~/.ssh
-        cat ~/.ssh/id_rsa_github
-
-    # SSH ke EC2 dan jalankan deploy script
-    - name: Deploy to EC2 via SSH
+    # Masuk ke dalam EC2, bikin folder crypto-tracker
+    - name: Deploy to EC2
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          # Setup SSH di dalam EC2
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_GITHUB_PRIVATE_KEY }}" > ~/.ssh/id_rsa_github
-          chmod 600 ~/.ssh/id_rsa_github
-          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+          mkdir -p ~/crypto-tracker
 
-          # Debugging untuk memastikan SSH key tersedia di EC2
-          ls -lah ~/.ssh
-          cat ~/.ssh/id_rsa_github
+    - name: Sync Files to EC2
+      run: |
+        rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
+          .next/ package.json package-lock.json \
+          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/crypto-tracker/
 
-          # Gunakan SSH key yang benar saat `git pull`
-          export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa_github"
+    - name: Deploy .env to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          echo "${{ secrets.ENV_FILE }}" > ~/crypto-tracker/.env
 
-          # Deploy aplikasi
+    - name: Install Dependencies in EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
           cd ~/crypto-tracker
-          git pull origin master
-          npm install
-          npm run build
-          pm2 describe crypto-tracker > /dev/null || pm2 start npm --name "crypto-tracker" -- run start
-          pm2 restart crypto-tracker
+          npm install --omit=dev
+          pm2 restart crypto-tracker || pm2 start npm --name "crypto-tracker" -- run start
+          pm2 save  # Pastikan aplikasi tetap berjalan setelah reboot
