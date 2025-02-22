@@ -44,11 +44,10 @@ jobs:
         script: |
           mkdir -p ~/crypto-tracker
 
-    - name: Deploy Code to EC2
+    - name: Sync Project to EC2
       run: |
-        rsync -avz --delete --exclude=node_modules --exclude=.git -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
-          .next/ package.json package-lock.json public/ src/ \
-          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/crypto-tracker/
+        rsync -avz --delete --exclude=node_modules --exclude=.git --exclude=.env.local -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
+          . ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/crypto-tracker/
 
     - name: Deploy .env to EC2
       uses: appleboy/ssh-action@master
