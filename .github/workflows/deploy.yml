@@ -44,10 +44,10 @@ jobs:
         script: |
           mkdir -p ~/crypto-tracker
 
-    - name: Sync Files to EC2
+    - name: Sync Full Project to EC2
       run: |
         rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
-          .next/ package.json package-lock.json \
+          .next/ package.json package-lock.json public/ app/ pages/ components/ \
           ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/crypto-tracker/
 
     - name: Deploy .env to EC2
