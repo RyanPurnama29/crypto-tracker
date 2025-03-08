@@ -23,7 +23,7 @@ export const generateColumns = (eftData: ETF[]): TableColumns[] => {
   return newColumns;
 };
 
-export const generateDataSource = (columns: TableColumns[], transactionData: Transaction[]) => {
+export const generateDataSource = (_columns: TableColumns[], transactionData: Transaction[]) => {
   /**
    * dataSource = [
    *  { key: '1', date: '03 Jan 2025', IBIT: 100, FBTC: 200, BITB: 300, ARKB: 400, BTCO: 500, EZBC: 600, BRRR: 700, HODL: 800, BTCW: 900, GBTC: 1000, BTC: 1100, total: 6600 },
