@@ -2,8 +2,7 @@ name: Deploy Crypto Tracker
 
 on:
   push:
-    branches: 
-      - master
+    branches: [master]
 
 jobs:
   deploy:
@@ -16,12 +15,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.20.2  # Adjust to match your local node version
+          node-version: 18.20.2
 
-      - name: Install dependencies & build project
+      - name: Install Dependencies & Build
         run: |
-          npm install
+          npm ci
           npm run build
+          npm prune --production
 
       - name: Setup SSH key
         run: |
@@ -30,19 +30,32 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Sync files to EC2
+      - name: Sync Built Project to EC2
         run: |
-          rsync -avz --delete --exclude='.git/' --exclude='.next' --exclude='node_modules' --exclude='.env.local' -e "ssh -i ~/.ssh/id_rsa" ./ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/crypto-tracker
+          rsync -avz --delete \
+          --exclude='.git' \
+          --exclude='.env.local' \
+          --exclude='node_modules' \
+          -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" \
+          ./ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/crypto-tracker
 
-      - name: Deploy Environment File
+      - name: Copy node_modules separately
         run: |
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "echo '${{ secrets.ENV_FILE }}' > ~/crypto-tracker/.env"
+          rsync -avz --delete \
+          ./node_modules \
+          -e "ssh -i ~/.ssh/id_rsa" \
+          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/crypto-tracker/
 
-      - name: Install dependencies & Restart PM2
-        run: |
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+      - name: Deploy Environment File & Restart PM2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "${{ secrets.ENV_FILE }}" > ~/crypto-tracker/.env
+
             cd ~/crypto-tracker
-            npm install --production
             pm2 delete crypto-tracker || true
             pm2 start npm --name crypto-tracker -- run start
             pm2 save
