@@ -7,6 +7,7 @@ export async function GET() {
     // return new Response(JSON.stringify(etf), { status: 200, headers: { 'Content-Type': 'application/json' } });
     return NextResponse.json(etf);
   } catch (error) {
+    console.error('Prisma Error:', error);
     return NextResponse.json({ error }, { status: 500 });
     // return new Response(JSON.stringify({ error }), {
     //   status: 500,
