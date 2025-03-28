@@ -2,12 +2,12 @@ import { Table } from 'antd';
 import { generateColumns, generateDataSource } from './normalize-table';
 
 async function getEtf() {
-  const res = await fetch(`https://crypto-tracker-iota-nine.vercel.app/api/get/etf`);
+  const res = await fetch(`https://bitdex.id/api/get/etf`);
   return res.json();
 }
 
 async function getTransaction() {
-  const res = await fetch(`https://crypto-tracker-iota-nine.vercel.app/api/get/transaction`);
+  const res = await fetch(`https://bitdex.id/api/get/transaction`);
   return res.json();
 }
 
