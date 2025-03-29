@@ -57,5 +57,5 @@ jobs:
 
             cd ~/crypto-tracker
             pm2 delete crypto-tracker || true
-            pm2 start npm --name crypto-tracker -- run start
+            pm2 start npm --name crypto-tracker -- run start -- --port 3000
             pm2 save
